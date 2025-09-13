@@ -1,53 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced Music Player</title>
-<link href="styles.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Music Player</title>
+    <link href="styles.css" rel="stylesheet">
 </head>
+
 <body>
-<div class="player">
-  <canvas class="wave-canvas"></canvas>
+    <div class="player">
+        <canvas class="wave-canvas"></canvas>
 
-  <div class="carousel-container" id="carousel-container">
-    <div class="carousel" id="carousel">
-      <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/1.jpg"></div>
-      <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/2.jpg"></div>
-      <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/3.jpg"></div>
-      <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/4.jpg"></div>
-      <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/5.jpg"></div>
-      <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/6.jpg"></div>
-      <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/7.jpg"></div>
+        <div class="carousel-container" id="carousel-container">
+            <div class="carousel" id="carousel">
+                <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/1.jpg"></div>
+                <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/2.jpg"></div>
+                <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/3.jpg"></div>
+                <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/4.jpg"></div>
+                <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/5.jpg"></div>
+                <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/6.jpg"></div>
+                <div class="album-container"><img src="http://physical-authority.surge.sh/imgs/7.jpg"></div>
+            </div>
+        </div>
+
+        <div class="song-info">
+            <h2 id="song-title">No Time</h2>
+            <p id="song-artist">Lastlings</p>
+        </div>
+
+        <div class="controls">
+            <button id="prev">&#9664;</button>
+            <button id="play">&#9654;</button>
+            <button id="next">&#9654;&#9654;</button>
+        </div>
+
+        <div class="progress-container" id="progress-container">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <ul class="playlist" id="playlist">
+            <li class="playlist-item active" data-index="0" data-title="No Time" data-artist="Lastlings"
+                data-src="music/1.mp3">No Time</li>
+            <li class="playlist-item" data-index="1" data-title="Blinding Lights" data-artist="The Weeknd"
+                data-src="music/2.mp3">Blinding Lights</li>
+            <li class="playlist-item" data-index="2" data-title="Джованна" data-artist="Enrasta" data-src="music/3.mp3">
+                Джованна</li>
+            <li class="playlist-item" data-index="3" data-title="A Man" data-artist="Travis Scott"
+                data-src="music/4.mp3">A Man</li>
+            <li class="playlist-item" data-index="4" data-title="Unforgetting" data-artist="Zaxx"
+                data-src="music/5.mp3">Unforgetting</li>
+            <li class="playlist-item" data-index="5" data-title="Waharan" data-artist="Randall" data-src="music/6.mp3">
+                Waharan</li>
+            <li class="playlist-item" data-index="6" data-title="Starlight feat MR Gabriel 4AM Remix"
+                data-artist="Jai Wolf" data-src="music/7.mp3">Starlight feat MR Gabriel 4AM Remix</li>
+        </ul>
+
     </div>
-  </div>
 
-  <div class="song-info">
-    <h2 id="song-title">No Time</h2>
-    <p id="song-artist">Lastlings</p>
-  </div>
-
-  <div class="controls">
-    <button id="prev">&#9664;</button>
-    <button id="play">&#9654;</button>
-    <button id="next">&#9654;&#9654;</button>
-  </div>
-
-  <div class="progress-container" id="progress-container">
-    <div class="progress" id="progress"></div>
-  </div>
-
-  <ul class="playlist" id="playlist">
-    <li class="playlist-item active" data-index="0" data-title="No Time" data-artist="Lastlings" data-src="http://physical-authority.surge.sh/music/1.mp3">No Time</li>
-    <li class="playlist-item" data-index="1" data-title="Blinding Lights" data-artist="The Weeknd" data-src="http://physical-authority.surge.sh/music/2.mp3">Blinding Lights</li>
-    <li class="playlist-item" data-index="2" data-title="Джованна" data-artist="Enrasta" data-src="http://physical-authority.surge.sh/music/3.mp3">Джованна</li>
-    <li class="playlist-item" data-index="3" data-title="A Man" data-artist="Travis Scott" data-src="http://physical-authority.surge.sh/music/4.mp3">A Man</li>
-    <li class="playlist-item" data-index="4" data-title="Unforgetting" data-artist="Zaxx" data-src="http://physical-authority.surge.sh/music/5.mp3">Unforgetting</li>
-    <li class="playlist-item" data-index="5" data-title="Waharan" data-artist="Randall" data-src="http://physical-authority.surge.sh/music/6.mp3">Waharan</li>
-    <li class="playlist-item" data-index="6" data-title="Starlight feat MR Gabriel 4AM Remix" data-artist="Jai Wolf" data-src="http://physical-authority.surge.sh/music/7.mp3">Starlight feat MR Gabriel 4AM Remix</li>
-  </ul>
-</div>
-
-<script src="script.js" defer></script>
+    <script src="script.js" defer></script>
 </body>
+
 </html>

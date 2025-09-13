@@ -21,109 +21,156 @@ canvas.height = 300;
 
 // ================== Player Update ==================
 function updatePlayer(index) {
-  const item = playlistItems[index];
-  songTitle.textContent = item.dataset.title;
-  songArtist.textContent = item.dataset.artist;
-  audio.src = item.dataset.src;
-  carousel.style.transform = `translateX(${-index * 290}px)`;
-  playlistItems.forEach(i => i.classList.remove('active'));
-  item.classList.add('active');
-  progress.style.width = '0%';
-  pauseAlbums();
-  isPlaying = false;
-  playBtn.textContent = '▶';
+    const item = playlistItems[index];
+    songTitle.textContent = item.dataset.title;
+    songArtist.textContent = item.dataset.artist;
+    audio.src = item.dataset.src;
+    carousel.style.transform = `translateX(${-index * 290}px)`;
+    playlistItems.forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    progress.style.width = '0%';
+    pauseAlbums();
+    isPlaying = false;
+    playBtn.textContent = '▶';
 }
 
 // ================== Album Rotation Control ==================
 function playAlbums() {
-  document.querySelectorAll('.album-container').forEach(el => el.classList.remove('paused'));
+    document.querySelectorAll('.album-container').forEach(el => el.classList.remove('paused'));
 }
-
 function pauseAlbums() {
-  document.querySelectorAll('.album-container').forEach(el => el.classList.add('paused'));
+    document.querySelectorAll('.album-container').forEach(el => el.classList.add('paused'));
 }
 
 // ================== Play / Pause ==================
 playBtn.addEventListener('click', async () => {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    const source = audioCtx.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    analyser.fftSize = 256;
-    bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-    drawWaveform();
-  }
-
-  if (isPlaying) {
-    audio.pause();
-    isPlaying = false;
-    playBtn.textContent = '▶';
-    pauseAlbums();
-  } else {
-    try {
-      await audio.play();
-      isPlaying = true;
-      playBtn.textContent = '⏸';
-      playAlbums();
-    } catch (err) {
-      console.log('Playback blocked:', err);
+    // Initialize AudioContext and Analyser
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        const source = audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        analyser.fftSize = 256;
+        bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+        drawWaveform();
     }
-  }
+
+    // Resume AudioContext if suspended
+    if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+    }
+
+    // Play or pause audio
+    if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        playBtn.textContent = '▶';
+        pauseAlbums();
+    } else {
+        try {
+            await audio.play();
+            isPlaying = true;
+            playBtn.textContent = '⏸';
+            playAlbums();
+        } catch (err) {
+            console.log('Playback blocked:', err);
+        }
+    }
 });
 
 // ================== Next / Previous ==================
-function nextSong() { currentIndex = (currentIndex + 1) % playlistItems.length; updatePlayer(currentIndex); playBtn.click(); }
-function prevSong() { currentIndex = (currentIndex - 1 + playlistItems.length) % playlistItems.length; updatePlayer(currentIndex); playBtn.click(); }
+function nextSong() {
+    currentIndex = (currentIndex + 1) % playlistItems.length;
+    updatePlayer(currentIndex);
+    playBtn.click();
+}
+function prevSong() {
+    currentIndex = (currentIndex - 1 + playlistItems.length) % playlistItems.length;
+    updatePlayer(currentIndex);
+    playBtn.click();
+}
 nextBtn.addEventListener('click', nextSong);
 prevBtn.addEventListener('click', prevSong);
 
 // ================== Playlist Click ==================
 playlistItems.forEach((item, index) => {
-  item.addEventListener('click', () => { currentIndex = index; updatePlayer(currentIndex); playBtn.click(); });
+    item.addEventListener('click', () => {
+        currentIndex = index;
+        updatePlayer(currentIndex);
+        playBtn.click();
+    });
 });
 
 // ================== Progress Bar ==================
 audio.addEventListener('timeupdate', () => {
-  if (audio.duration) {
-    progress.style.width = (audio.currentTime / audio.duration * 100) + '%';
-    if (audio.ended) nextSong();
-  }
+    if (audio.duration) {
+        progress.style.width = (audio.currentTime / audio.duration * 100) + '%';
+        if (audio.ended) nextSong();
+    }
+});
+
+// Seek on progress bar click
+document.getElementById('progress-container').addEventListener('click', e => {
+    const rect = e.target.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const width = rect.width;
+    const seekTime = (clickX / width) * audio.duration;
+    audio.currentTime = seekTime;
 });
 
 // ================== Swipe Support ==================
 let startX = 0, isDragging = false;
 carouselContainer.addEventListener('mousedown', e => { startX = e.pageX; isDragging = true; });
-carouselContainer.addEventListener('mousemove', e => { if(!isDragging) return; carousel.style.transform = `translateX(${-currentIndex*290 + (e.pageX-startX)}px)`; });
-carouselContainer.addEventListener('mouseup', e => { isDragging = false; const diff = e.pageX-startX; if(diff>50) prevSong(); else if(diff<-50) nextSong(); else updatePlayer(currentIndex); });
+carouselContainer.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    carousel.style.transform = `translateX(${-currentIndex*290 + (e.pageX-startX)}px)`;
+});
+carouselContainer.addEventListener('mouseup', e => {
+    isDragging = false;
+    const diff = e.pageX - startX;
+    if(diff > 50) prevSong();
+    else if(diff < -50) nextSong();
+    else updatePlayer(currentIndex);
+});
+carouselContainer.addEventListener('mouseleave', () => { if(isDragging) { isDragging=false; updatePlayer(currentIndex); } });
 carouselContainer.addEventListener('touchstart', e => { startX = e.touches[0].pageX; isDragging = true; });
-carouselContainer.addEventListener('touchmove', e => { if(!isDragging) return; const diff = e.touches[0].pageX-startX; carousel.style.transform = `translateX(${-currentIndex*290 + diff}px)`; });
-carouselContainer.addEventListener('touchend', e => { isDragging = false; const diff = e.changedTouches[0].pageX-startX; if(diff>50) prevSong(); else if(diff<-50) nextSong(); else updatePlayer(currentIndex); });
+carouselContainer.addEventListener('touchmove', e => {
+    if(!isDragging) return;
+    const diff = e.touches[0].pageX - startX;
+    carousel.style.transform = `translateX(${-currentIndex*290 + diff}px)`;
+});
+carouselContainer.addEventListener('touchend', e => {
+    isDragging = false;
+    const diff = e.changedTouches[0].pageX - startX;
+    if(diff > 50) prevSong();
+    else if(diff < -50) nextSong();
+    else updatePlayer(currentIndex);
+});
 
 // ================== Waveform Animation ==================
 function drawWaveform() {
-  requestAnimationFrame(drawWaveform);
-  if (!analyser) return;
-  analyser.getByteFrequencyData(dataArray);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.beginPath();
-  ctx.strokeStyle = '#b8926a';
-  ctx.lineWidth = 2;
-  const centerX = canvas.width/2;
-  const centerY = canvas.height/2;
-  const radius = 100;
-  const slice = (Math.PI*2)/bufferLength;
-  for(let i=0;i<bufferLength;i++){
-    const amplitude = dataArray[i]/2;
-    const angle = i*slice;
-    const x = centerX + Math.cos(angle)*(radius+amplitude);
-    const y = centerY + Math.sin(angle)*(radius+amplitude);
-    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  }
-  ctx.closePath();
-  ctx.stroke();
+    requestAnimationFrame(drawWaveform);
+    if (!analyser) return;
+    analyser.getByteFrequencyData(dataArray);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.strokeStyle = '#b8926a';
+    ctx.lineWidth = 2;
+    const centerX = canvas.width/2;
+    const centerY = canvas.height/2;
+    const radius = 100;
+    const slice = (Math.PI*2)/bufferLength;
+    for(let i=0;i<bufferLength;i++){
+        const amplitude = dataArray[i]/2;
+        const angle = i*slice;
+        const x = centerX + Math.cos(angle)*(radius+amplitude);
+        const y = centerY + Math.sin(angle)*(radius+amplitude);
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.stroke();
 }
 
 // ================== Initial Setup ==================
