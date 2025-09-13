@@ -31,4 +31,4 @@ A modern, swipeable music player built with **HTML, CSS, and JavaScript**, featu
 
 1. Clone the repository:
    ```bash
-   git clone <repository_url>
+   git clone "https://github.com/SadiyaTahsin29/AD-MUSIC.git"
